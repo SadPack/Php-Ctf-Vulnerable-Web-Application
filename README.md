@@ -46,9 +46,9 @@ SELECT * FROM users WHERE username = 'admin' --' AND password = ''
 Since a user named `admin` exists, the login succeeds with no valid password ever supplied.
 
 ### Evidence
-- `login-page-normal.png`
-- `sqli-payload.png`
-- `sqli-success.png`
+login-page-normal.png
+sqli-payload.png
+sqli-success.png
 
 ### Remediation
 Use parameterized queries (prepared statements) so user input is always treated as data, never as part of the SQL command structure.
