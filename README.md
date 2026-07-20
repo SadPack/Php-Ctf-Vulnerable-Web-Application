@@ -3,16 +3,14 @@
 ## Overview
 A small, intentionally vulnerable PHP app built to demonstrate four real-world web security vulnerabilities. The goal is to chain a login bypass with a stored XSS exploit to reach a final flag page, with two extra standalone vulnerabilities (command injection and broken access control) to find independently.
 
-**Tech stack:** Kali Linux, PHP, SQLite3, PHP's built-in server.
+**Tech stack:** Windows, PHP, SQLite3, PHP's built-in server.
 
 | # | Vulnerability | Location |
 |---|---|---|
 | 1 | SQL Injection (Auth Bypass) | `login.php` |
 | 2 | Stored XSS | `dashboard.php` |
-| 3 | OS Command Injection | `dashboard.php` (ping tool) |
+| 3 | OS Command Injection | `dashboard.php` |
 | 4 | Broken Access Control | `admin.php` |
-
-> **Note:** This is a static code repository. GitHub cannot run PHP, so clicking a `.php` file only shows its source code. To actually run the app, download the files and start PHP's built-in server locally (see Setup).
 
 ## Setup
 ```bash
@@ -31,7 +29,7 @@ $query = "SELECT * FROM users WHERE username = '$username' AND password = '$pass
 
 **Exploit:** In the Username field, enter `admin' --`, leave Password blank, click Login.
 
-**Why it works:** The `'` closes the string early, and `--` comments out the rest of the query — including the password check. Query becomes:
+**Why it works:** The `'` closes the string early, and `--` comments out the rest of the query including the password check. Query becomes:
 ```sql
 SELECT * FROM users WHERE username = 'admin' --' AND password = ''
 ```
@@ -93,11 +91,11 @@ $role = $_GET['role'] ?? 'guest';
 if ($role === 'admin') { $access = true; }
 ```
 
-**Exploit:** Visit `admin.php` (denied), then `admin.php?role=admin` (granted — no login needed).
+**Exploit:** Visit `admin.php` (denied), then `admin.php?role=admin` (granted no login needed).
 
 **Why it works:** Access is decided by a value the visitor controls in the URL, with no real session check.
 
-**Fix:** Enforce access control server-side, based on an authenticated session — never on client-supplied parameters.
+**Fix:** Enforce access control server side, based on an authenticated session never on client supplied parameters.
 
 ![Admin denied](screenshots/admin-denied.png)
 ![Admin bypass](screenshots/admin-bypass.png)
@@ -121,4 +119,4 @@ Chaining the SQLi login bypass with dashboard access leads to `flag.php`, reward
 | Command Injection | Unsanitized input to `shell_exec()` | Avoid shell execution with user input |
 | Broken Access Control | Trusting client-supplied data for auth | Enforce access checks server-side |
 
-This project shows that vulnerabilities can exist at different stages of a request — input validation, output encoding, system execution, and access control — and a single app can suffer from all of them at once.
+This project shows that vulnerabilities can exist at different stages of a request input validation, output encoding, system execution, and access control and a single app can suffer from all of them at once.
